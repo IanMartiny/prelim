@@ -5,11 +5,40 @@ discovery (how to users of a service discovery whether contacts also use a
 service), presence discovery (whether users are currently online), and anonymous
 communication.
 
-\subsection{Private Information Retrieval}
+\subsection{Private Information Retrieval}\label{ssec:PIR}
 We briefly introduce the notion of Private Information Retrieval (PIR) as it
-crops up in many of the future topics. There are two main classes of PIR, Information Theoretic (IT-PIR) and Computational (C-PIR).
+crops up in many of the future topics. There are two main classes of PIR,
+Information Theoretic (IT-PIR) and Computational (C-PIR). Private information
+retrieval was introduced in~\cite{chor1995private} as a means of querying a
+database without explicitly informing the server which element was queried.
 
-\subsection{Contact discovery}
+As is common with privacy schemes there is a simple naive approach: the client
+requests the entire database and locally searches for the desired entry. Of
+course this method of PIR is infeasible. There has been numerous work in
+providing useable and efficient PIR with acceptable threat models
+usable~\cite{aguilar2016xpir,devet2012optimally,beimel2002robust}
+
+\subsubsection{Information Theoretic Private Information Retrieval}
+IT-PIR focuses on solving the problem of private database look-ups by
+introducing multiple non-colluding servers. These schemes have multiple
+(sometimes partial) copies of the database on multiple servers. The client then
+constructs specific queries to each server and combines the results.
+
+For example, a client interested in the 3rd entry of a database may make a
+request for the \texttt{xor} of the 3rd, 10th and 25th entries of the database
+from one server and the \texttt{xor} of the 10th and the 25th entries of the
+database from a second server. Locally the client can \texttt{xor} the  replies
+from the servers to obtain the 3rd entry. As long as the servers do not discuss
+what was requested from each neither knows what entry was actually desired.
+
+Recent work~\cite{demmler2018pir}
+
+% also talk about optimally robust 
+
+\subsubsection{Computation Private Information Retrieval}
+
+
+\subsection{Contact discovery}\label{ssec:contactDiscovery}
 Contact discovery is the process of clients of a service discovering whether any
 of their contacts also use the same service.
 
