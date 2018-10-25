@@ -1,0 +1,61 @@
+\section{Privacy}\label{sec:priv}
+In this section we analyze some of the tools which focus on privacy and
+anonymity for average users. Specifically we examine the problems of contact
+discovery (how to users of a service discovery whether contacts also use a
+service), presence discovery (whether users are currently online), and anonymous
+communication.
+
+\subsection{Private Information Retrieval}
+We briefly introduce the notion of Private Information Retrieval (PIR) as it
+crops up in many of the future topics. There are two main classes of PIR, Information Theoretic (IT-PIR) and Computational (C-PIR).
+
+\subsection{Contact discovery}
+Contact discovery is the process of clients of a service discovering whether any
+of their contacts also use the same service.
+
+In non-private settings this is very simple to achieve, the client provides
+contact details to the service which then queries its database and returns who
+is available on the service. This method requires each client to reveal their
+whole contact list to the service. Allowing the service to track metadata on
+every client, as well as leaking non-clients phone numbers.
+
+Signal systems has gone through the process of trying to handle contact
+discovery in a private way~\cite{marlinspike_2014}. As a text messaging service
+offering end-to-end encryption it is necessary for Signal to be aware of which
+contact are also Signal clients. They address the difficulties of contact
+discovery, a natural first attempt is to simply hash contacts and send them to
+the service to verify hashes. Unfortunately the pre-image space of these hashes
+is small (there are only 10 billion possible phone numbers, many of which are
+not valid, due to area codes) which allows to off-line attacks by the service
+after receiving a client's contact list. Other possible options for contact
+discovery exist including using Private Information Retrieval (PIR), bloom
+filters, and Private Set Intersection (PSI), though these solutions cause
+services to make trade-offs due to either large overhead in communication sizes
+or in computation costs. Signal has recently implemented a more private contact
+discovery method leveraging Intel's Software Guard Extensions
+(SGX)~\cite{marlinspike_2017}. The high-level implementation is that clients
+make a secure connection to the Signal server and perform a remote attestation
+that the code they are running is the published open-source code, and then use
+SGX's trusted enclave to perform an intersection where the server is sent an
+encrypted form of the clients contacts (which are only decrypted and readable in
+the trusted enclave). 
+
+However, recent attacks on SGX~\cite{van2018foreshadow} have demonstrated the
+the trusted enclave should not be so trusted. This leads to the natural question
+of ``are there better methods of contact discovery?''. 
+
+As stated above, the use of PIR or PSI as a method of private contact discovery
+has large overhead which is not usable for large services. However, recent
+work~\cite{demmler2018pir} has combined these two concepts to lessen the
+overhead. Using a distributed point function, clients can generate an
+information theoretic private information retrieval (IT-PIR) request from 2-4
+separate servers, afterward this request is completed by using a Private
+Equality Test (PEQ) between the client's contact information and the database
+query. This method scales better than previous methods in that a client with
+1024 contacts can perform private contact discovery with a server of 67 million
+clients in 1.36 seconds and 4.28MiB of communication.
+
+% \subsection{Presence discovery}
+% Presence discovery is the concept a client of service discovering whether any of
+% their contacts also use the service or whether any are currently online
+% (depending on the system).
