@@ -16,7 +16,11 @@ As is common with privacy schemes there is a simple naive approach: the client
 requests the entire database and locally searches for the desired entry. Of
 course this method of PIR is infeasible. There has been numerous work in
 providing useable and efficient PIR with acceptable threat models
-usable~\cite{aguilar2016xpir,devet2012optimally,beimel2002robust}
+usable~\cite{aguilar2016xpir,devet2012optimally,beimel2002robust} as well as
+providing implementations of uses of PIR, such as PIR-Tor~\cite{mittal2011pir}
+which provides an implementation of Tor to gain information on Tor nodes from a
+small subset of onion routers using PIR as opposed to using a Peer-to-Peer
+network.
 
 \subsubsection{Information Theoretic Private Information Retrieval}
 IT-PIR focuses on solving the problem of private database look-ups by
@@ -31,12 +35,30 @@ database from a second server. Locally the client can \texttt{xor} the  replies
 from the servers to obtain the 3rd entry. As long as the servers do not discuss
 what was requested from each neither knows what entry was actually desired.
 
-Recent work~\cite{demmler2018pir}
+Recent work~\cite{demmler2018pir} leverages Distributed Point Functions which
+enables querying over the full database in a quick (but private) way.
 
-% also talk about optimally robust 
+Previous work has also examined how robust IT-PIR is both in terms of server
+failure~\cite{beimel2002robust} and in terms of malicious
+servers~\cite{devet2012optimally} to still provide functionality when a
+threshold of servers are either purposely non-responsive, or malformed
+responses.
 
 \subsubsection{Computation Private Information Retrieval}
+\computationalPIR
 
+C-PIR allows for private database queries by leveraging homomorphic encryption. Homomorphic encryption has an encryption function $E(\cdot)$, and decryption function $D(\cdot)$ with the following property:
+\[
+    D(E(a) + E(b)) = a + b
+\]
+This allows for querying from a database privately as demonstrated in
+Figure~\ref{fig:cpir}. The client can create a vector of encryptions of 0s and a
+1 in the location of the entry of the desired file. Upon receiving this
+encrypted query the server can use homomorphic multiplication (repeated addition
+$D(c\cdot E(a)) = c\cdot a$) and the homomorphic addition property to return the
+requested file while learning nothing of \textit{which} file was requested.
+
+Unfortunately C-PIR is computationally expensive, often to the point of infeasibility for practical use. Though previous work~\cite{aguilar2016xpir,dong2014fast,gentry2005single} has attempted to develop and implement efficient C-PIR any current close to practical protocol limits the size of the database queried in C-PIR, or uses C-PIR in conjunction with other privacy preserving methods (such as Private Set Intersection~\cite{freedman2004efficient}).
 
 \subsection{Contact discovery}\label{ssec:contactDiscovery}
 Contact discovery is the process of clients of a service discovering whether any
@@ -84,7 +106,14 @@ query. This method scales better than previous methods in that a client with
 1024 contacts can perform private contact discovery with a server of 67 million
 clients in 1.36 seconds and 4.28MiB of communication.
 
-% \subsection{Presence discovery}
-% Presence discovery is the concept a client of service discovering whether any of
-% their contacts also use the service or whether any are currently online
-% (depending on the system).
+\subsection{Presence discovery}
+Presence discovery is the concept a client of a service discovering whether any
+of their ``friends'' or contacts on the services are currently online. Again
+naively, this can be done by simply requesting information on each contact,
+which leaks metadata.
+
+This can be done privately with PIR, but as expected this does not scale well.
+The threat model here is generally that only your friends should be able to
+query about your online status and you should not have to announce your friends.
+
+% talk about DP5 in more detail
