@@ -140,13 +140,49 @@ in the long-term database.
 
 \subsection{Anonymous communication}\label{sec:anonymousCommunication}
 Free communication is the backbone of freedom. Unfortunately not everyone has
-the freedom of speech, and have the need to speak anonymously to avoid
+the freedom of speech, these people have the need to speak anonymously to avoid
 persecution. Even those with freedom of speech often find the need to speak
 anonymously.
 
 There are tools which allow for anonymous communication such as
 Tor~\cite{syverson2004tor} which provide anonymity by routing traffic through
-relay nodes using onion routing. While the theoretic security provided is high
-there are drawbacks such as vulnerability to traffic analysis and the need to
-rely on enough volunteers so that a malicious adversary does not gain majority
-control of the network. 
+relay nodes using onion routing. There are drawbacks such as vulnerability to
+traffic analysis and the need to rely on enough volunteers so that a malicious
+adversary does not gain majority control of the network. Even with these
+drawbacks Tor offers the most practical identity protection. 
+
+\DCNet
+
+Dissent~\cite{wolinsky2012dissent} offers a protocol founded on more secure
+communication protocols, at the cost of scalability. Dissent is based on the
+security of DC-Nets~\cite{chaum1988dining}, DC-Nets are briefly explained in
+Figure~\ref{fig:dcnet}.
+
+While the DC-Nets provide a strong guarantee of anonymity (among honest
+participants) they do not scale well. Early implementations of DC-Nets only
+scaled to group sizes of about 50~\cite{corrigan2010dissent, goel2003herbivore},
+Dissent scales to 5,000 participants using group sizes of 600 participants.
+
+In general, DC-Nets scale poorly due to the need for every client to share
+secrets. Dissent solves by having clients have shared secrets with servers.
+Communication happens in rounds, each client has some selection of bits it is
+allowed to modify every epoch. Upon deciding to send a message in a given epoch
+the client \texttt{xor}s its message into their allocated bits for the epoch
+along with all shared keys with participating servers. The client then waits for
+an attestation of the form $(r, m, sig)$ where $r$ is the current epoch, $m$ is
+the collection of clear-text messages from the epoch $r$ and $sig$ is the
+attestation to those messages from the servers.
+
+The servers work analogously, \texttt{xor}ing received messages with shared
+secrets between all known clients (not only clients that sent messages). They
+attest to their result and send it to all other servers, who \texttt{xor} all
+the results together which is then attested to and the epoch, messages, and
+attestation is sent back to the clients.
+
+Due to the method of communication, a client noticing that their messages are
+being censored by a given server can simply communicate with a different
+(hopefully) more honest server, allowing Dissent to act under an Anytrust model,
+the protocol works as long as one honest server exists. Clients can also accuse
+other clients of publishing in their slots, where servers can announce their
+random shared secrets corresponding to those bits, to deduce who the offending
+client is.

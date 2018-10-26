@@ -1,0 +1,90 @@
+\section{Computation} \label{sec:computation}
+Users are more conscientious of their data now. However, they still desire
+functional technology. In light of Facebook using personalized identifying
+information (PII) (ostensibly used for two-factor identification) for
+advertising~\cite{venkatadri1investigating} as well as previous and never-ending
+leaks of personal information~\cite{fung_2017, granville_2018} more users are
+aware of the hazards of giving third-parties PII.
+
+More businesses make use of cloud computing services as well which brings up a
+new host of issues, including whether these computations are done correctly, and
+how much company data must be given to these services to get the job done. 
+
+In this section we analyze the techniques developed to allow for secure
+computation without providing private information and verifiable computation
+through proofs of computation with no knowledge.
+
+\subsection{Secure Computation} \label{ssec:secureComputation}
+The problem of secure computation is often motivated by two entities
+(individuals or more commonly companies) wishing to compute some function
+$f(\cdot)$ on their combined data without having to directly share information.
+This task can be completed by utilizing a trusted third party to collect data
+from both parties, compute the function, and report the results. However, such a
+scenario may be just as undesirable or impossible (e.g. two hospitals with
+private patient data). Other recent work~\cite{scaife2018oniondns} attempts to
+leverage the Tor network as a DNS routing system.
+
+Nonetheless, the entities wish to answer some question on the union of their
+data. Previous work analyzes the typical use case and threat model of such
+situations~\cite{yao1982protocols, lindell2005secure}. Solutions to this problem
+often leverage clever uses of encryption and obfuscations in order to obscure
+information from separate parties. As such these protocols are tasked with
+proving their correctness and security. 
+
+In both correctness and security a protocol is judged by its relationship to an
+analogous problem in the ``Ideal world''~\cite{lindell2005secure}. The Ideal
+world is one in which a trusted third party (as above) exists, is willing and
+capable of doing the computation on the union of data sets in a private way.
+Often proofs of security work by showing that any adversary in the ``real
+world'' model can modify their attack in polynomial time to be an attack in the
+ideal world, as such attacks (on the protocol, not on data security itself) are
+infeasible in the ideal world, the attack in the real world must also be secure.
+
+While some work has been done towards generalized protocols for secure
+computation, most recent work focuses on specific tasks that must be done
+privately~\cite{bogetoft2009secure,miers2013zerocoin,parno2013pinocchio}. One
+previous work~\cite{bogetoft2009secure} demonstrates the capability of secure
+multiparty computation by creating a functioning auction among Danish beet
+farmers. 
+
+This work motivates the need for private auctions by the desire of beet farmers
+to sell their beet contracts to other farmers (and informing the seller of the
+contract) without having to leak financial information that could affect future
+contract negotiations. Each farmer needs to announce (privately) their desired
+bid (whether to buy or sell, and for how much at which quantities), and based on
+these announcements the system needs to decide which contracts transfer to which
+bidders.
+
+This is achieved by using Shamir secret sharing~\cite{shamir1979share}, which
+encodes data as points on a polynomial. After a secret has been encoded as a
+point (usually in a field $\mathbb{F}$), say $x$, a polynomial, $f$, of degree
+$t$, the number of representatives needed to reconstruct the secret, is created
+such that $f(0)= x$. Shares of $x$ can be shared among the participants in the
+form of evaluations of $f$, namely $f(1), f(2),\ldots, f(t+1)$. As $t+1$ points
+are necessary to construct a polynomial of degree $t$, separately the secret has
+been shared amongst people, but together the secret can be recovered.
+
+The scenario above requires a trusted third party to construct the polynomial
+$f$, and thus needs to know the secret $x$. This can be circumvented (as it is
+in~\cite{bogetoft2009secure}) by leveraging symmetric encryption simple, public
+polynomials. In~\cite{bogetoft2009secure} three non-colluding servers are used
+along with keyed pseudo random function, $F$, and public functions $f_i$ such
+that $f_i(0) = 1, f_i(i) = 0$ for $i=1,2,3$. Then clients can announce their
+secret $x_j$ as:
+\[
+    y_j = F_{K_1}(j) + F_{K_2}(j) + F_{K_3}(j) + x_j \mod p
+\]
+The $i$th server knows all keys, except $K_i$ allowing it to compute it share of
+the polynomial as:
+\[
+    y_j - F_{K_1}(j)f_1(i) - F_{K_2}(j)f_2(i) - F_{K_3}(j)f_3(i)
+\]
+Note that server $i$ cannot compute $F_{K_i}(j)$ but $f_i(i) = 0$ so that term
+is negated in their computation, allowing them to complete it.
+
+Together they have created the polynomial $g_j = F_{K_1}(j)f_1 - F_{K_2}(j)f_2
+- F_{K_3}f_3$ to share private values between the three servers.
+
+With the data effectively split between servers, the servers can perform local
+computation on their shares (adding sell and buy values) to determine a fair
+market price.
