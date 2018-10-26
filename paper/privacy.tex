@@ -117,3 +117,36 @@ The threat model here is generally that only your friends should be able to
 query about your online status and you should not have to announce your friends.
 
 % talk about DP5 in more detail
+DP5~\cite{borisov2015dp5} has found ways to make PIR scale more effectively. By
+breaking up the size of the database that must be queried PIR methods can still
+be effectively used. DP5 works by having a user upload an identifier and a
+single symmetric key encrypted under a different public key for each ``friend''
+on their contact list to a long-term key database (on the order of a day).
+Additionally a single entry (containing online status) encrypted under the
+common symmetric key is store in a short-term database (updated every few
+minutes). 
+
+The short-term database only has at most one entry per user, which allows for
+effective use of IT-PIR. The long-term database contains many entries per user
+which scales poorly with PIR, fortunately it only needs to be queried at most
+once per day, making the costs not too prohibitive. 
+
+The dual nature of the ``online status'' of clients allows for certain
+trade-offs, while the queries can be done privately and (relatively)
+efficiently, removing friends can only be done on the order of the long-term
+database. As online status is encrypted under a single symmetric key for all of
+a clients friends, this status is available to all people that receive an entry
+in the long-term database.
+
+\subsection{Anonymous communication}\label{sec:anonymousCommunication}
+Free communication is the backbone of freedom. Unfortunately not everyone has
+the freedom of speech, and have the need to speak anonymously to avoid
+persecution. Even those with freedom of speech often find the need to speak
+anonymously.
+
+There are tools which allow for anonymous communication such as
+Tor~\cite{syverson2004tor} which provide anonymity by routing traffic through
+relay nodes using onion routing. While the theoretic security provided is high
+there are drawbacks such as vulnerability to traffic analysis and the need to
+rely on enough volunteers so that a malicious adversary does not gain majority
+control of the network. 
