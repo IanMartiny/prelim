@@ -15,8 +15,8 @@ database without explicitly informing the server which element was queried.
 As is common with privacy schemes there is a simple naive approach: the client
 requests the entire database and locally searches for the desired entry. Of
 course this method of PIR is infeasible. There has been numerous work in
-providing useable and efficient PIR with acceptable threat models
-usable~\cite{aguilar2016xpir,devet2012optimally,beimel2002robust} as well as
+providing useable and efficient PIR with acceptable threat
+models~\cite{aguilar2016xpir,devet2012optimally,beimel2002robust} as well as
 providing implementations of uses of PIR, such as PIR-Tor~\cite{mittal2011pir}
 which provides an implementation of Tor to gain information on Tor nodes from a
 small subset of onion routers using PIR as opposed to using a Peer-to-Peer
@@ -44,7 +44,7 @@ servers~\cite{devet2012optimally} to still provide functionality when a
 threshold of servers are either purposely non-responsive, or malformed
 responses.
 
-\subsubsection{Computation Private Information Retrieval}
+\subsubsection{Computational Private Information Retrieval}
 \computationalPIR
 
 C-PIR allows for private database queries by leveraging homomorphic encryption. Homomorphic encryption has an encryption function $E(\cdot)$, and decryption function $D(\cdot)$ with the following property:
@@ -61,7 +61,7 @@ requested file while learning nothing of \textit{which} file was requested.
 Unfortunately C-PIR is computationally expensive, often to the point of
 infeasibility for practical use. Though previous
 work~\cite{aguilar2016xpir,dong2014fast,gentry2005single} has attempted to
-develop and implement efficient C-PIR any current close to practical protocol
+develop and implement efficient C-PIR any current close-to-practical protocol
 limits the size of the database queried in C-PIR, or uses C-PIR in conjunction
 with other privacy preserving methods (such as Private Set
 Intersection~\cite{freedman2004efficient}).
@@ -74,19 +74,19 @@ In non-private settings this is very simple to achieve, the client provides
 contact details to the service which then queries its database and returns who
 is available on the service. This method requires each client to reveal their
 whole contact list to the service. Allowing the service to track metadata on
-every client, as well as leaking non-clients phone numbers.
+every client, as well as leaking non-clients contact information.
 
 Signal systems has gone through the process of trying to handle contact
 discovery in a private way~\cite{marlinspike_2014}. As a text messaging service
 offering end-to-end encryption it is necessary for Signal to be aware of which
-contact are also Signal clients. They address the difficulties of contact
-discovery, a natural first attempt is to simply hash contacts and send them to
-the service to verify hashes. Unfortunately the pre-image space of these hashes
-is small (there are only 10 billion possible phone numbers, many of which are
-not valid, due to area codes) which allows to off-line attacks by the service
-after receiving a client's contact list. Other possible options for contact
-discovery exist including using Private Information Retrieval (PIR), bloom
-filters, and Private Set Intersection (PSI), though these solutions cause
+of a users contacts are also Signal clients. They address the difficulties of
+contact discovery, a natural first attempt is to simply hash contacts and send
+them to the service to verify hashes. Unfortunately the pre-image space of these
+hashes is small (there are only 10 billion possible phone numbers, many of which
+are not valid, due to area codes) which allows for off-line attacks by the
+service after receiving a client's contact list. Other possible options for
+contact discovery exist including using Private Information Retrieval (PIR),
+bloom filters, and Private Set Intersection (PSI), though these solutions cause
 services to make trade-offs due to either large overhead in communication sizes
 or in computation costs. Signal has recently implemented a more private contact
 discovery method leveraging Intel's Software Guard Extensions
@@ -106,31 +106,33 @@ has large overhead which is not usable for large services. However, recent
 work~\cite{demmler2018pir} has combined these two concepts to lessen the
 overhead. Using a distributed point function, clients can generate an
 information theoretic private information retrieval (IT-PIR) request from 2-4
-separate servers, afterward this request is completed by using a Private
-Equality Test (PEQ) between the client's contact information and the database
-query. This method scales better than previous methods in that a client with
-1024 contacts can perform private contact discovery with a server of 67 million
-clients in 1.36 seconds and 4.28MiB of communication.
+separate (non-colluding) servers, afterward this request is completed by using a
+Private Equality Test (PEQ) between the client's contact information and the
+database query. This method scales better than previous methods in that a client
+with 1024 contacts can perform private contact discovery with a server of 67
+million clients in 1.36 seconds and 4.28MiB of communication.
 
 \subsection{Presence discovery}
 Presence discovery is the concept a client of a service discovering whether any
-of their ``friends'' or contacts on the services are currently online. Again
+of their ``friends'' or contacts on the service are currently online. Again
 naively, this can be done by simply requesting information on each contact,
 which leaks metadata.
 
 This can be done privately with PIR, but as expected this does not scale well.
-The threat model here is generally that only your friends should be able to
-query about your online status and you should not have to announce your friends.
+The standard threat model for presence discovery is that only your friends
+should be able to query about your online status and you should not have to
+announce your friends, so there is more work than simply private querying, there
+needs to be checks on who can gain presence information.
 
 % talk about DP5 in more detail
-DP5~\cite{borisov2015dp5} has found ways to make PIR scale more effectively. By
-breaking up the size of the database that must be queried PIR methods can still
-be effectively used. DP5 works by having a user upload an identifier and a
-single symmetric key encrypted under a different public key for each ``friend''
-on their contact list to a long-term key database (on the order of a day).
-Additionally a single entry (containing online status) encrypted under the
-common symmetric key is store in a short-term database (updated every few
-minutes). 
+DP5~\cite{borisov2015dp5} has implemented a tool using PIR for presence
+discovery. By breaking up the size of the database that must be queried PIR
+methods can still be effectively used. DP5 works by having a user upload an
+identifier and a single symmetric key encrypted under a different public key for
+each ``friend'' on their contact list to a long-term (on the order of a day) key
+database. Additionally a single entry (containing online status) encrypted under
+the common symmetric key is store in a short-term (updated every few minutes)
+database. 
 
 The short-term database only has at most one entry per user, which allows for
 effective use of IT-PIR. The long-term database contains many entries per user
@@ -170,7 +172,7 @@ scaled to group sizes of about 50~\cite{corrigan2010dissent, goel2003herbivore},
 Dissent scales to 5,000 participants using group sizes of 600 participants.
 
 In general, DC-Nets scale poorly due to the need for every client to share
-secrets. Dissent solves by having clients have shared secrets with servers.
+secrets. Dissent solves this by having clients only share secrets with servers.
 Communication happens in rounds, each client has some selection of bits it is
 allowed to modify every epoch. Upon deciding to send a message in a given epoch
 the client \texttt{xor}s its message into their allocated bits for the epoch
@@ -197,6 +199,6 @@ Other work~\cite{van2015vuvuzela} allows for millions of users to communicate
 anonymously by making use of mixnets as well as onion routing among a chain of
 servers using ``dead drops'' to anonymous communication. Previous
 work~\cite{borisov2004off} builds on top of standard encryption schemes to
-create Off-The-Record communication which allows for participants to know who
-they are communicating with in the moment (as well as eavesdroppers) but not be
+create Off-The-Record communication which allows for participants (as well as
+eavesdroppers) to know who they are communicating with in the moment but not be
 able to prove it later.
