@@ -1,0 +1,82 @@
+\section{Conclusion}\label{sec:conclusion}
+In this survey we reviewed a number of papers focusing on privacy. We examined
+numerous tools that enable privacy while restricting the need for trusted
+parties. 
+
+First we introduced the concept of Private Information Retrieval, which enables
+querying databases without the server being aware of what was requested. There
+are two forms of PIR, information theoretic and computation. IT-PIR requires
+users to have trust that the servers running the protocol will not collude with
+each other (or with clients). This trust can be garnered by allowing volunteers
+to run servers (such as PIR-Tor), which requires the information to be obscured
+in some way from the volunteers (possibly with partial databases) though this
+scenario increases the damage to service providers in the case of collusion
+while limiting the likelihood of damage to clients. C-PIR allows users to have
+limited to no trust in service providers by using a centralized model but this
+model come with a high computation cost for servers, this is a major drawback to
+see real world implementations. It appears that in light of a new design for
+C-PIR, the current protocols are the best we can expect. As such future research
+making use of C-PIR will need to rely on various mitigations of cost such as
+limiting of database or epoch size, which allows clients to make use of these
+private protocols while limiting the cost for service providers. However such a
+solution will limit the privacy enjoyed compared to solutions without these
+mitigations. While IT-PIR is faster than C-PIR, it is still slow and needs
+additional protocols to make useable in real world scenarios. Some options here
+include batching of responses, a query can return multiple values from the
+database, that can be processes to limit the information sent to clients to the
+value they requested.
+
+We then discussed contact discovery, and the difficulty posed by how to verify
+whether information the client possesses is the same as information possessed by
+the service, without forcing the client to give this information to the service.
+The recent work in this area leverages both PIR and private set intersection
+combining techniques, as mentioned above was necessary, to achieve a more
+efficient solution. While the results are promising they are not yet usable in a
+real world application.
+
+We discussed presence discovery, which focuses on a similar problem as
+above, but with more dynamic information, solutions to this problem often
+involve fracturing the database into a long-term and short-term look up model,
+allowing for the long-term database to be less private and larger while the
+short-term database can be queried more privately and more often.
+
+Our last section on privacy tools was on anonymous communication. Anonymous
+communication was achieved by making use of DC-Nets, which allow for the sending
+of messages while not having to announce who sent the message. Other work that
+scales better (to millions) leverages other techniques, such as mixnets while
+still relying on at least one honest server.
+
+After our privacy discussions we moved to private computation. These are
+techniques which allow for third parties to perform computations on data either
+privately or with proof the computation is correct. Our survey covered the
+general techniques used in these cases and discussed how to make formal
+arguments about the security and correctness of these protocols. We dove into
+the specific task of allowing Danish farmers to trade beet farming contracts
+without needing to inform the contractors how much each farmer was bidding or
+selling at, which leveraged Shamir secret sharing.
+
+Verifiable computation is achievable through the use of zero knowledge proofs
+which allow for users to prove they possess knowledge without having to directly
+announce their knowledge. Significant work has been done attempting to provide
+general proof systems through reducing general programs to circuits which can be
+attested and verified quickly. While these general proof systems are constantly
+improving in efficiency and usability, they still lack true generality, often
+restricting the proof system to very specific types of problems, such as fixed
+size matrix multiplication. More successful work has used zero knowledge proofs
+to prove specific knowledge, such as with Zerocoin which solely focuses on
+proving knowledge of a user having previously bought some coin (and not spent it
+yet).
+
+Differential privacy introduces the notion of privacy within a database.
+Questions asked of database are sensitive to the information they contain,
+attackers can use this to determine information about individuals in the
+database. RAPPOR introduces a protocol of querying databases that allows useful
+answers to be given to questions posed to a database while obscuring information
+about individuals. This is done by taking the true answer and generating a
+permanent random entry that will be used as the basis for a second randomization
+round for all repetitions of the query.
+
+Privacy tools allow individuals to communicate or compute values while
+maintaining control of their data. Privacy tools that leverage mathematics as
+opposed to a trusted party allow users to have complete faith in the system they
+use, often at the cost of computation time.

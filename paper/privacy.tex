@@ -58,7 +58,13 @@ encrypted query the server can use homomorphic multiplication (repeated addition
 $D(c\cdot E(a)) = c\cdot a$) and the homomorphic addition property to return the
 requested file while learning nothing of \textit{which} file was requested.
 
-Unfortunately C-PIR is computationally expensive, often to the point of infeasibility for practical use. Though previous work~\cite{aguilar2016xpir,dong2014fast,gentry2005single} has attempted to develop and implement efficient C-PIR any current close to practical protocol limits the size of the database queried in C-PIR, or uses C-PIR in conjunction with other privacy preserving methods (such as Private Set Intersection~\cite{freedman2004efficient}).
+Unfortunately C-PIR is computationally expensive, often to the point of
+infeasibility for practical use. Though previous
+work~\cite{aguilar2016xpir,dong2014fast,gentry2005single} has attempted to
+develop and implement efficient C-PIR any current close to practical protocol
+limits the size of the database queried in C-PIR, or uses C-PIR in conjunction
+with other privacy preserving methods (such as Private Set
+Intersection~\cite{freedman2004efficient}).
 
 \subsection{Contact discovery}\label{ssec:contactDiscovery}
 Contact discovery is the process of clients of a service discovering whether any
@@ -186,3 +192,11 @@ the protocol works as long as one honest server exists. Clients can also accuse
 other clients of publishing in their slots, where servers can announce their
 random shared secrets corresponding to those bits, to deduce who the offending
 client is.
+
+Other work~\cite{van2015vuvuzela} allows for millions of users to communicate
+anonymously by making use of mixnets as well as onion routing among a chain of
+servers using ``dead drops'' to anonymous communication. Previous
+work~\cite{borisov2004off} builds on top of standard encryption schemes to
+create Off-The-Record communication which allows for participants to know who
+they are communicating with in the moment (as well as eavesdroppers) but not be
+able to prove it later.

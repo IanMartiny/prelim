@@ -88,3 +88,74 @@ Together they have created the polynomial $g_j = F_{K_1}(j)f_1 - F_{K_2}(j)f_2
 With the data effectively split between servers, the servers can perform local
 computation on their shares (adding sell and buy values) to determine a fair
 market price.
+
+\subsection{Verifiable Computation}\label{ssec:verifiableComputation}
+Verifiable computation is motivated by the ability to compute. There are two
+cases we consider here; first the case where a service provider (say a cloud
+computing center) desires (or needs) to provide proof that their computations
+are correct, and second the case where an entity wishes to prove that they can
+perform a computation without having to reveal their data.
+
+Verifying computation can be a necessary step for cloud computing companies. A
+company willing to run computations on your data is worthless if the
+computations are incorrect. However, verifiers (in this case the data providers)
+are at an impasse, because to verify computations they must know the correct
+answer.  Previous work has only been able to provide proof systems for specific
+functions~\cite{sion2005query}, or rely on secure
+hardware~\cite{anati2013innovative} or be inefficient due to relying of
+homomorphic encryption~\cite{gentry2009fully}. 
+
+Pinocchio~\cite{parno2013pinocchio} attempts to solve this by verifying
+computation relying only on cryptographic assumptions, and while maintaining a
+constant proof size. This is achieved by constructing proofs in 3 parts: ($G$,
+$P$, $V$). $G$ is the key generator, which generates a public evaluation key and
+a public verification key. The goal is to encode an arbitrary function $F$ into
+a circuit $C$ whose results can be easily verified. 
+
+The computer can then evaluate the function $F$ at input $x$ to obtain $F(x)= y$
+and use this value along with the public evaluation key to produce a proof
+$\pi_y$. The verifier can take this proof and use pairings (bilinear functions
+satisfying $e(x^a,y^b) = e(x,y^{ab})$) to verify the computation is correct. The
+key here is that the bilinear functions are quick to compute, and can be used to
+verify that the exponents from the proof are used in the correct places.
+
+However, this system still only allows for very restricted computations, limited
+to computations of the form of fixed sized matrix multiplication.
+
+Other work~\cite{ben2013snarks} provide proofs over a language defined over a
+small ISA (\texttt{TinyRAM}) which allows for C programs to be compiled into a
+verifiable ISA computation.
+
+Zerocoin~\cite{miers2013zerocoin} provides a usable implementation of proofs in
+zero knowledge, which we introduce briefly here. It is often desireable to be
+able to proof knowledge to others, e.g., that an individual does posses the
+private key of a public/private key pair. However, the simple method of proof
+(i.e., simply producing the private key) is undesirable because voids the
+usefulness of that value. The motivates zero knowledge proofs, allowing for an
+individual to prove they have knowledge of a certain value without others
+learning the value. In the example above such a proof might be for others to
+encrypt values to the public key and require the individual to decrypt them.
+
+Zerocoin provides a first step towards implementing zero knowledge proofs
+towards Bitcoin. Bitcoin~\cite{nakamoto2008bitcoin} provides a decentralized
+currency providing users with pseudo-nomity, but not anonymity. Zerocoin
+introduces a method of proof to allow payments anonymously. As opposed to the
+Bitcoin model where clients provide a wallet address that contains the requisite
+funds to make a purchase, Zerocoin enables clients to provide a proof that one
+of a list of deposits was done by the client, and that deposit has not been
+spent before.
+
+This proof is achieved using accumulators. An accumulator is simply a known base
+value, raised to numerous exponents, the accumulator $A$ defined from  $u$ and
+$C$ would be the value $u^{c_1\cdot c_2\cdots c_m} \mod N$ for all $c_i\in C$. A
+witness to a value in an accumulator is an accumulator of all values except the
+given one. For example, a witness for $c_1$ in the above would be the
+accumulator $u^{c_2\cdots c_m}\mod N$, this provide a simple (but not zero
+knowledge) way to prove a value is in an accumulator, simply provide an
+accumulator, a value, and a witness. To turn this knowledgeable proof into a
+zero knowledge proof, Zerocoin leverages the work of \cite{camenisch2002dynamic}
+which provides a zero knowledge proof system using accumulators, as above the
+proof relies on the prover providing their secrets obscured using RSA encryption
+techniques, while the verifier can confirm that only a user with the necessary
+secret knowledge could compute these attestation values with non-negligible
+probability.

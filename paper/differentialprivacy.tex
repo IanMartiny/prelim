@@ -1,0 +1,96 @@
+\section{Differential Privacy}\label{sec:diff}
+Differential privacy is an attribute of a statistical database (one that is used
+to compute statistics about a sample). Essentially differential privacy ensures
+that questions asked of a database does not leak information about any single
+entry. As usual this property can be achieved with a trusted third party sitting
+between users and the database, users ask questions of the third party who
+queries the database and modifies the responses in subtle ways so as to not leak
+individual information.
+
+Without the aid of trusted party we must rely upon mathematics to allow us to
+gain meaningful answers about a sample, while not ruining any individuals
+privacy. Dwork defines $\epsilon$-differential privacy in
+\cite{dwork2008differential} as:
+
+\paragraph{Definition:} A randomized function $\kappa$ gives
+$\epsilon$-differential privacy if for all datasets $D_1$ and $D_2$ differing on
+at most one element and all $S\subseteq Range(\kappa)$,
+\[
+    \text{Pr}[\kappa(D_1) \in S] \leq \text{exp}(\epsilon) \times 
+    \text{Pr}[\kappa(D_2) \in S]
+\]
+The probability is taken ove the coin tosses of $\kappa$.
+
+Essentially this is saying that the output of a randomized function (query) on a
+database should not change (in a noticeable way) between very similar databases.
+We notes that this concerns the execution of a \textit{randomized} function
+$\kappa$ on a database, differential privacy is achieved by adding random noise
+to the results of the query to a database. However, care must be taken here;
+adding noise centered around zero leads allows for adversaries to average the
+result of multiple queries to obtain the true value. A poor solution to this is
+to have the curator ($\kappa$) record queries and responses and to simply replay
+responses to repeat queries. However \cite{dinur2003revealing} demonstrate that
+random (seemingly) unrelated queries can reveal unintended information. Dwork
+recommends using a Laplace distribution with standard deviation of
+$\sqrt{2}\Delta f/\epsilon$ in order to achieve $\epsilon$-differential privacy.
+Where $\Delta f$ is the \textit{sensitivity} of $f$, the maximum difference
+between $f$ evaluated on two databases differing in only one entry.
+
+However, there are some cases where adding noise is unacceptable, such as when
+the query should return a string, or a tree, or in a situation when (even
+slight) noise can affect an outcome. One example of this would be an auction,
+when querying a database for prices, adding too much noise could affect whether
+(and who) would buy an item. In such a situation \cite{mcsherry2007mechanism}
+recommends the use of a utility function $u(X,y)$ which measures the usefulness
+of result $y$ on database $X$. For example, $u(X,y)$ might measure the revenue
+of an auction of items in $X$ when the prices are $y$. With a utility function
+chooses to output $y$ as the result of a query with probability
+$\text{exp}(-\epsilon \Delta u(X,y)/2)$ to achieve $\epsilon\Delta
+u$-differential privacy, which ensures a participant cannot dramatically reduce
+the price he pays by lying about his valuation.
+
+Google has implemented their own form of differential privacy,
+RAPPOR~\cite{erlingsson2014rappor} (Randomized Aggregatable Privacy-Preserving
+Ordinal Response). They attempt to address two main attacks, one-time
+collection, and multiple collections of statistics. 
+
+They achieve this using bloom filters and two rounds of randomization. The bloom
+filter allows the encoding of values into a bitstring set by a fixed number of
+hash functions. 
+
+After this encoding a long term randomization is created based
+on a user tunable randomization parameter $f$, and the bitstring, $B_i$,
+generated above by:
+\[
+    B^\prime_i = \begin{cases}
+        1, & \mbox{with probability } \frac{1}{2} f\\
+        0, & \mbox{with probability } \frac{1}{2} f\\
+        B_i & \mbox{with probability } 1 - f
+    \end{cases}
+\]
+This long term randomization is stored and used as the permanent response to the
+given query.
+
+The permanent response is randomized again, based on other user tunable
+randomization parameters $p,q$ to generate a bitstring $S$ as follows:
+\[
+    \text{Pr}[S_i = 1] = \begin{cases}
+        q, &\mbox{if } B^\prime_i = 1\\
+        p, &\mbox{if } B^\prime_i = 0
+    \end{cases}
+\]
+This bitstring $S$ is reported to the user.
+
+The long term randomization allows for multiple requests for the same query to
+never leak the true value, the instantaneous randomization allow for protection
+against the attack described above~\cite{mcsherry2007mechanism} that leverages
+separate queries to gain information based on stored (query, response) pairs.
+
+However, RAPPOR can be adapted to fit more specific needs, such as one-time
+RAPPOR, when the long term randomization can be skipped if the user is only
+allowed few queries.
+
+They prove that RAPPOR's long term randomization achieves $\epsilon_\infty = 2h
+\ln\left(\frac{1-0.5 f}{0.5f}\right)$-differential privacy and $\epsilon_1 =
+h\log\left(\frac{q(1-p)}{p(1-q)}\right)$-differential privacy, where $h$ is the
+number of hash functions used in the bloom filter.
