@@ -66,11 +66,11 @@ been shared amongst people, but together the secret can be recovered.
 
 The scenario above requires a trusted third party to construct the polynomial
 $f$, and thus needs to know the secret $x$. This can be circumvented (as it is
-in~\cite{bogetoft2009secure}) by leveraging symmetric encryption simple, public
-polynomials. In~\cite{bogetoft2009secure} three non-colluding servers are used
-along with keyed pseudo random function, $F$, and public functions $f_i$ such
-that $f_i(0) = 1, f_i(i) = 0$ for $i=1,2,3$. Then clients can announce their
-secret $x_j$ as:
+in~\cite{bogetoft2009secure}) by leveraging symmetric encryption and simple,
+public polynomials. In~\cite{bogetoft2009secure} three non-colluding servers are
+used along with keyed pseudo random function, $F$, and public functions $f_i$
+such that $f_i(0) = 1, f_i(i) = 0$ for $i=1,2,3$. Then clients can announce
+their secret $x_j$ as:
 \[
     y_j = F_{K_1}(j) + F_{K_2}(j) + F_{K_3}(j) + x_j \mod p
 \]
@@ -128,7 +128,7 @@ verifiable ISA computation.
 
 Zerocoin~\cite{miers2013zerocoin} provides a usable implementation of proofs in
 zero knowledge, which we introduce briefly here. It is often desireable to be
-able to proof knowledge to others, e.g., that an individual does posses the
+able to proof knowledge to others, e.g., that an individual possesses the
 private key of a public/private key pair. However, the simple method of proof
 (i.e., simply producing the private key) is undesirable because voids the
 usefulness of that value. The motivates zero knowledge proofs, allowing for an
@@ -150,7 +150,7 @@ value, raised to numerous exponents, the accumulator $A$ defined from  $u$ and
 $C$ would be the value $u^{c_1\cdot c_2\cdots c_m} \mod N$ for all $c_i\in C$. A
 witness to a value in an accumulator is an accumulator of all values except the
 given one. For example, a witness for $c_1$ in the above would be the
-accumulator $u^{c_2\cdots c_m}\mod N$, this provide a simple (but not zero
+accumulator $u^{c_2\cdots c_m}\mod N$, this provides a simple (but not zero
 knowledge) way to prove a value is in an accumulator, simply provide an
 accumulator, a value, and a witness. To turn this knowledgeable proof into a
 zero knowledge proof, Zerocoin leverages the work of \cite{camenisch2002dynamic}
