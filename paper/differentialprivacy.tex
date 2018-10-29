@@ -1,6 +1,6 @@
 \section{Differential Privacy}\label{sec:diff}
 Differential privacy is an attribute of a statistical database (one that is used
-to compute statistics about a sample). Essentially differential privacy ensures
+to compute statistics about a sample). Differential privacy ensures
 that questions asked of a database does not leak information about any single
 entry. As usual this property can be achieved with a trusted third party sitting
 between users and the database, users ask questions of the third party who
@@ -19,18 +19,18 @@ at most one element and all $S\subseteq Range(\kappa)$,
     \text{Pr}[\kappa(D_1) \in S] \leq \text{exp}(\epsilon) \times 
     \text{Pr}[\kappa(D_2) \in S]
 \]
-The probability is taken ove the coin tosses of $\kappa$.
+The probability is taken over the coin tosses of $\kappa$.
 
 Essentially this is saying that the output of a randomized function (query) on a
 database should not change (in a noticeable way) between very similar databases.
-We notes that this concerns the execution of a \textit{randomized} function
+We note that this concerns the execution of a \textit{randomized} function
 $\kappa$ on a database, differential privacy is achieved by adding random noise
 to the results of the query to a database. However, care must be taken here;
-adding noise centered around zero leads allows for adversaries to average the
-result of multiple queries to obtain the true value. A poor solution to this is
-to have the curator ($\kappa$) record queries and responses and to simply replay
-responses to repeat queries. However \cite{dinur2003revealing} demonstrate that
-random (seemingly) unrelated queries can reveal unintended information. Dwork
+adding noise centered around zero allows for adversaries to average the result
+of multiple queries to obtain the true value. A poor solution to this is to have
+the curator ($\kappa$) record queries and responses and to simply replay
+responses to repeated queries. However \cite{dinur2003revealing} demonstrate
+that (seemingly) unrelated queries can reveal unintended information. Dwork
 recommends using a Laplace distribution with standard deviation of
 $\sqrt{2}\Delta f/\epsilon$ in order to achieve $\epsilon$-differential privacy.
 Where $\Delta f$ is the \textit{sensitivity} of $f$, the maximum difference
@@ -40,14 +40,14 @@ However, there are some cases where adding noise is unacceptable, such as when
 the query should return a string, or a tree, or in a situation when (even
 slight) noise can affect an outcome. One example of this would be an auction,
 when querying a database for prices, adding too much noise could affect whether
-(and who) would buy an item. In such a situation \cite{mcsherry2007mechanism}
-recommends the use of a utility function $u(X,y)$ which measures the usefulness
-of result $y$ on database $X$. For example, $u(X,y)$ might measure the revenue
-of an auction of items in $X$ when the prices are $y$. With a utility function
-chooses to output $y$ as the result of a query with probability
-$\text{exp}(-\epsilon \Delta u(X,y)/2)$ to achieve $\epsilon\Delta
-u$-differential privacy, which ensures a participant cannot dramatically reduce
-the price he pays by lying about his valuation.
+or not to (or who would) buy an item. In such a situation
+\cite{mcsherry2007mechanism} recommends the use of a utility function $u(X,y)$
+which measures the usefulness of result $y$ on database $X$. For example,
+$u(X,y)$ might measure the revenue of an auction of items in $X$ when the prices
+are $y$. With a utility function chooses to output $y$ as the result of a query
+with probability $\text{exp}(-\epsilon \Delta u(X,y)/2)$ to achieve
+$\epsilon\Delta u$-differential privacy, which ensures a participant cannot
+dramatically reduce the price he pays by lying about his valuation.
 
 Google has implemented their own form of differential privacy,
 RAPPOR~\cite{erlingsson2014rappor} (Randomized Aggregatable Privacy-Preserving
@@ -91,6 +91,7 @@ RAPPOR, when the long term randomization can be skipped if the user is only
 allowed few queries.
 
 They prove that RAPPOR's long term randomization achieves $\epsilon_\infty = 2h
-\ln\left(\frac{1-0.5 f}{0.5f}\right)$-differential privacy and $\epsilon_1 =
+\ln\left(\frac{1-0.5 f}{0.5f}\right)$-differential privacy and  the short term
+randomization achieves $\epsilon_1 =
 h\log\left(\frac{q(1-p)}{p(1-q)}\right)$-differential privacy, where $h$ is the
 number of hash functions used in the bloom filter.
